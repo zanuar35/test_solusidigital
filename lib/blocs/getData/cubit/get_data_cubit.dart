@@ -27,7 +27,7 @@ class GetDataCubit extends Cubit<GetDataState> {
     }
     // jika gagal get data
     else if (res.statusCode != 200) {
-      //
+      emit(GetDataError());
     }
   }
 }

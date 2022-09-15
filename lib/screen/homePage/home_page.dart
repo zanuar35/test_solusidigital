@@ -153,20 +153,22 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                     ),
-                    Expanded(
-                      child: CarouselSlider(
-                        items: imageSliders,
-                        carouselController: _controller,
-                        options: CarouselOptions(
-                            enlargeCenterPage: true,
-                            aspectRatio: 16 / 5,
-                            onPageChanged: (index, reason) {
-                              setState(() {
-                                _current = index;
-                              });
-                            }),
+                    Row(children: [
+                      Expanded(
+                        child: CarouselSlider(
+                          items: imageSliders,
+                          carouselController: _controller,
+                          options: CarouselOptions(
+                              enlargeCenterPage: true,
+                              aspectRatio: 16 / 5,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _current = index;
+                                });
+                              }),
+                        ),
                       ),
-                    ),
+                    ]),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: gambar.asMap().entries.map((entry) {
@@ -201,22 +203,23 @@ class _MyHomePageState extends State<MyHomePage> {
                         );
                       }
                       if (state is GetDataSuccess) {
-                        return Expanded(
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: 10,
-                              itemBuilder: (context, index) {
-                                return NewsBox(
-                                  title: state.articles?[index].title,
-                                  source: state.articles?[index].source?.name,
-                                  publishAt: state.articles?[index].publishedAt,
-                                  urlImage: state.articles?[index].urlToImage,
-                                  content: state.articles?[index].content,
-                                );
-                              }),
-                        );
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: 10,
+                            itemBuilder: (context, index) {
+                              return NewsBox(
+                                title: state.articles?[index].title,
+                                source: state.articles?[index].source?.name,
+                                publishAt: state.articles?[index].publishedAt,
+                                urlImage: state.articles?[index].urlToImage,
+                                content: state.articles?[index].content,
+                              );
+                            });
+                      }
+                      if (state is GetDataError) {
+                        return const Text("Gagal");
                       }
                       return const SizedBox();
                     })
