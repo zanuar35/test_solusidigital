@@ -1,8 +1,19 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:test_solusidigital/blocs/getData/cubit/get_data_cubit.dart';
 import 'package:test_solusidigital/screen/homePage/widget/container_antrian.dart';
 import 'package:test_solusidigital/screen/homePage/widget/news_box.dart';
+
+List<String> gambar = [
+  "assets/img/promothumb-1565.png",
+  "assets/img/promothumb-1565.png",
+  "assets/img/promothumb-1565.png",
+  "assets/img/promothumb-1565.png",
+  "assets/img/promothumb-1565.png",
+  "assets/img/promothumb-1565.png",
+];
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -14,11 +25,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _current = 0;
+  final CarouselController _controller = CarouselController();
   @override
   void initState() {
     super.initState();
     BlocProvider.of<GetDataCubit>(context).getData();
   }
+
+  final List<Widget> imageSliders = gambar
+      .map((item) => Container(
+            margin: const EdgeInsets.all(5.0),
+            child: Stack(
+              children: <Widget>[
+                Image.asset(item, fit: BoxFit.fill, width: 1000.0),
+              ],
+            ),
+          ))
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   icon: const Icon(
                     Icons.person,
                   ),
-                  onPressed: () {}),
+                  onPressed: () {
+                    BlocProvider.of<GetDataCubit>(context).getData();
+                  }),
             ),
           ),
           const SizedBox(
@@ -127,14 +153,51 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 25,
+                    Expanded(
+                      child: CarouselSlider(
+                        items: imageSliders,
+                        carouselController: _controller,
+                        options: CarouselOptions(
+                            enlargeCenterPage: true,
+                            aspectRatio: 16 / 5,
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                _current = index;
+                              });
+                            }),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: gambar.asMap().entries.map((entry) {
+                        return GestureDetector(
+                          onTap: () => _controller.animateToPage(entry.key),
+                          child: Container(
+                            width: _current == entry.key ? 22 : 12.0,
+                            height: 12.0,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 4.0),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: (Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : const Color(0xff0093DD))
+                                    .withOpacity(
+                                        _current == entry.key ? 0.9 : 0.4)),
+                          ),
+                        );
+                      }).toList(),
                     ),
                     BlocBuilder<GetDataCubit, GetDataState>(
                         builder: (context, state) {
                       if (state is GetDataLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
+                        return Column(
+                          children: [
+                            shimmer(),
+                            const SizedBox(height: 15),
+                            shimmer()
+                          ],
                         );
                       }
                       if (state is GetDataSuccess) {
@@ -162,6 +225,22 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget shimmer() {
+    return SizedBox(
+      width: double.infinity,
+      height: 100.0,
+      child: Shimmer.fromColors(
+          baseColor: Colors.grey,
+          highlightColor: Colors.black45,
+          child: Container(
+            width: double.infinity,
+            height: 100,
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+          )),
     );
   }
 

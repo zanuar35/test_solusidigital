@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_solusidigital/screen/detailPage/detail_page.dart';
 
 class NewsBox extends StatefulWidget {
   const NewsBox(
@@ -72,9 +73,23 @@ class _NewsBoxState extends State<NewsBox> {
                 const SizedBox(
                   height: 10,
                 ),
-                const Text(
-                  "Baca selengkapnya..",
-                  style: TextStyle(color: Color(0xff0093dd)),
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                        urlImage: widget.urlImage,
+                        title: widget.title,
+                        content: widget.content,
+                        source: widget.source,
+                        publishedAt: widget.publishAt,
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    "Baca selengkapnya..",
+                    style: TextStyle(color: Color(0xff0093dd)),
+                  ),
                 )
               ],
             ),
